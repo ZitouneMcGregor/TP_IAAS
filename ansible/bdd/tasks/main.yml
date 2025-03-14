@@ -17,12 +17,12 @@
 
 # config pgsql
 
-- name: Faire en sorte que Postgre ecoute toutes les adresses
+- name: "Configure PostgreSQL to listen on all addresses"
   become: true
   lineinfile:
     path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
     regexp: '^#?listen_addresses\s*='
-    line: "listen_addresses = '*'"
+    line: "listen_addresses = 'localhost,192.168.100.123'"
     state: present
     backup: yes
   notify: Restart PostgreSQL
@@ -79,4 +79,4 @@
     db: "{{ db_name }}"
     path: "/tmp/init.sql"
     login_user: "{{ db_user }}"
-    login_password: "{{ db_password }}" 
+    login_password: "{{ db_password }}"

@@ -1,2 +1,10 @@
 ---
-# handlers file for app
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart myapp
+  ansible.builtin.systemd:
+    name: myapp
+    state: restarted
+    enabled: true

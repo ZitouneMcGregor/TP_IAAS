@@ -3,3 +3,8 @@
   become: yes
   roles:
     - bdd
+
+- hosts: app
+  become: yes
+  roles:
+    - app

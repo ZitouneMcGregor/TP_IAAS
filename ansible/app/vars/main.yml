@@ -1,2 +1,8 @@
 ---
 # vars file for app
+
+db_name: cytech
+db_user: cytech_usr
+db_password: "cytech"
+db_host: "192.168.100.123"
+db_port: 5432
