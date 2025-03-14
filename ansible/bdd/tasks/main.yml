@@ -17,7 +17,7 @@
 
 # config pgsql
 
-- name: "Configure PostgreSQL to listen on all addresses"
+- name: Permettre à Postgres d'ecouter sur la VM et localhost sinon ca plante
   become: true
   lineinfile:
     path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"

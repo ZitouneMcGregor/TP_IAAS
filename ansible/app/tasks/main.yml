@@ -1,4 +1,5 @@
 ---
+# Installation des dépendances et mise en place de tout ce qu'il faut
 - name: Installer dépendances système pour Python et psycopg2
   become: true
   ansible.builtin.apt:
@@ -10,7 +11,7 @@
     state: present
     update_cache: true
 
-- name: Créer un répertoire pour l'application FastAPI
+- name: Créer un répertoire pour l'appli FastAPI
   file:
     path: /opt/fastapi_app
     state: directory
@@ -18,7 +19,7 @@
     group: root
     mode: '0755'
 
-- name: Créer l'environnement virtuel via pip (sans community.general)
+- name: Créer l'environnement virtuel avec pip
   become: true
   pip:
     virtualenv: /opt/fastapi_app/venv
@@ -26,7 +27,7 @@
     name: []
     state: present
 
-- name: Installer FastAPI, uvicorn et psycopg2-binary dans le venv
+- name: Installer FastAPI uvicorn et psycopg2-binary dans le venv
   become: true
   pip:
     virtualenv: /opt/fastapi_app/venv
@@ -36,7 +37,8 @@
       - psycopg2-binary
     state: present
 
-- name: Copier le code de l'application FastAPI
+# Prendre les templates
+- name: Copier le code de l'appli FastAPI
   become: true
   ansible.builtin.template:
     src: main.py.j2
@@ -45,7 +47,7 @@
     group: root
     mode: '0755'
 
-- name: Créer le service systemd pour l'application FastAPI
+- name: Créer le service systemd pour l'appli FastAPI
   become: true
   ansible.builtin.template:
     src: fastapi_app.service.j2
@@ -59,26 +61,28 @@
   ansible.builtin.systemd:
     daemon_reload: yes
 
-- name: Activer et démarrer le service FastAPI
+# Lancement de FastApi
+- name: Activer et démarrer FastAPI
   become: true
   ansible.builtin.systemd:
     name: fastapi_app
     state: started
     enabled: true
 
-- name: Attendre quelques secondes que l'application soit UP
+- name: Attendre que l'appli soit UP
   wait_for:
     host: 127.0.0.1
     port: 8000
     delay: 2
     timeout: 30
 
+# Requete et affichage
 - name: Faire une requête sur l'API et enregistrer le résultat
   uri:
     url: http://127.0.0.1:8000/mon_nom
     return_content: true
   register: api_result
 
-- name: Afficher le résultat dans un debug
+- name: Afficher le résultat
   debug:
     var: api_result.content
