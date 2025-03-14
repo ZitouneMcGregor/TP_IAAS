@@ -1,0 +1,82 @@
+---
+- name: Install PGSQL, ACL et psycopg2
+  ansible.builtin.apt:
+    name: postgresql,postgresql-contrib,python3-psycopg2, acl
+    state: present
+    update_cache: true
+    
+- name: Creer group
+  group: 
+    name: cytech_grp
+    state: present
+
+- name: Créer un utilisateur cytech_usr
+  user:
+    name: cytech_usr
+    group: cytech_grp
+
+# config pgsql
+
+- name: Faire en sorte que Postgre ecoute toutes les adresses
+  become: true
+  lineinfile:
+    path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
+    regexp: '^#?listen_addresses\s*='
+    line: "listen_addresses = '*'"
+    state: present
+    backup: yes
+  notify: Restart PostgreSQL
+
+- name: Copier le pg_hba sur la vm
+  become: true
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: "/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: '0644'
+  notify: Restart PostgreSQL
+
+# Relance forcée de Postgre
+
+- name: stop PostgreSQL
+  ansible.builtin.systemd:
+    name: postgresql@14-main
+    state: stopped
+
+- name: start PostgreSQL
+  ansible.builtin.systemd:
+    name: postgresql@14-main
+    state: started
+
+# Créer user et BDD
+
+- name: Créer user
+  community.postgresql.postgresql_user:
+    name: "{{ db_user }}"
+    password: "{{ db_password }}"
+    role_attr_flags: "LOGIN"
+
+- name: Créer bdd
+  community.postgresql.postgresql_db:
+    name: "{{ db_name }}"
+    owner: "{{ db_user }}" 
+
+# Script pour faire table cytech avec un user dedans
+
+- name: Copier init.sql dans la vm
+  become: true
+  ansible.builtin.template:
+    src: init.sql.j2
+    dest: "/tmp/init.sql"
+    owner: postgres
+    group: postgres
+    mode: '0644'
+
+- name: Executer init.sql
+  become_user: postgres
+  community.postgresql.postgresql_script:
+    db: "{{ db_name }}"
+    path: "/tmp/init.sql"
+    login_user: "{{ db_user }}"
+    login_password: "{{ db_password }}" 

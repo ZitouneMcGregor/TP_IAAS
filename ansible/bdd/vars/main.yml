@@ -1,0 +1,5 @@
+---
+db_user: cytech_usr
+db_password: cytech
+db_name: cytech
+postgresql_version: 14 

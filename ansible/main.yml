@@ -1,0 +1,5 @@
+---
+- hosts: bdd
+  become: yes
+  roles:
+    - bdd
