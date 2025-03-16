@@ -17,12 +17,12 @@
 
 # config pgsql
 
-- name: Permettre à Postgres d'ecouter sur la VM et localhost sinon ca plante
+- name: Permettre à Postgres d'ecouter partout
   become: true
   lineinfile:
     path: "/etc/postgresql/{{ postgresql_version }}/main/postgresql.conf"
     regexp: '^#?listen_addresses\s*='
-    line: "listen_addresses = 'localhost,192.168.100.123'"
+    line: "listen_addresses = '*'"
     state: present
     backup: yes
   notify: Restart PostgreSQL
