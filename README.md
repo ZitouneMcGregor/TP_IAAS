@@ -1,6 +1,6 @@
 # TP_IAAS
 
-- Aller dans le répertoire terraform/.
+- Aller dans le répertoire terraform/ :
     cd terraform
 
 - Initialiser Terraform (télécharge les providers, modules, etc.) :
