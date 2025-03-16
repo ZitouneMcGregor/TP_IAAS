@@ -1,6 +1,6 @@
 # APP
 app_vm_name       = "cytech-2-app"
-app_dedicated_mem = 512
+app_dedicated_mem = 1024
 app_vcpu_number   = 1
 app_ip_vm         = "192.168.100.122/24"
 app_ssh_key       = "/home/cytech/.ssh/id_rsa.pub"
